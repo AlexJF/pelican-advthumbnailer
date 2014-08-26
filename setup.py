@@ -26,6 +26,6 @@ setup(
     download_url = 'https://github.com/AlexJF/pelican-advthumbnailer/archive/v0.1.0.zip',
     keywords = 'pelican blog static thumbnail generation',
     description = ('A thumbnail generator for Pelican that operates by looking'
-            'at the filename of missing files to determine thumb format.'),
+            ' at the filename of missing files to determine thumb format.'),
     long_description = long_description
 )

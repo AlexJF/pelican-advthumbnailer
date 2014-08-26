@@ -27,13 +27,13 @@ Usage
 
 1. Update ``pelicanconf.py``:
 
-   1. Add ``pelican-advthumbnailer`` to ``PLUGINS``.
+   1. Add ``advthumbnailer`` to ``PLUGINS``.
 
       You should add it before any image optimization plugins.
 
       .. code-block:: python
           
-          PLUGINS = [..., 'pelican-advthumbnailer']
+          PLUGINS = [..., 'advthumbnailer']
 
 2. Creating a thumbnail:
 
