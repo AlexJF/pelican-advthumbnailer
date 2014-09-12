@@ -15,6 +15,7 @@ from pelican.utils import mkdir_p
 from bs4 import BeautifulSoup
 
 from jinja2.ext import Extension
+import urlparse, mimetypes
 
 
 logger = logging.getLogger(__name__)
@@ -158,8 +159,16 @@ def find_image_urls_in_file(file_path):
         soup = BeautifulSoup(file_obj)
 
         imgs = soup.find_all("img")
+        links = soup.find_all("a")
 
-        return [img["src"] for img in imgs]
+        urls = [img['src'] for img in imgs]
+        for l in links:
+            url = l['href']
+            maintype= mimetypes.guess_type(urlparse.urlparse(url).path)[0]
+            if maintype in ('image/png', 'image/jpeg', 'image/gif'):
+                urls.append(url)
+
+        return urls
 
 
 class JinjaThumbnailExtension(Extension):
