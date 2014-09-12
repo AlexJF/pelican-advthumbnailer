@@ -8,7 +8,7 @@ setup(
 
     # Basic package information:
     name = 'pelican-advthumbnailer',
-    version = '0.1.0',
+    version = '0.2.0',
     py_modules = ('advthumbnailer',),
 
     # Packaging options:
@@ -23,9 +23,10 @@ setup(
     author_email = 'alexandrejorgefonseca@gmail.com',
     license = 'Apache',
     url = 'https://github.com/AlexJF/pelican-advthumbnailer',
-    download_url = 'https://github.com/AlexJF/pelican-advthumbnailer/archive/v0.1.0.zip',
+    download_url = 'https://github.com/AlexJF/pelican-advthumbnailer/archive/v0.2.0.zip',
     keywords = 'pelican blog static thumbnail generation',
     description = ('A thumbnail generator for Pelican that operates by looking'
             ' at the filename of missing files to determine thumb format.'),
+    use_2to3 = True,
     long_description = long_description
 )
