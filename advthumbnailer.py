@@ -16,7 +16,6 @@ from bs4 import BeautifulSoup
 
 from jinja2.ext import Extension
 
-
 logger = logging.getLogger(__name__)
 
 try:
@@ -153,13 +152,27 @@ class Thumbnailer(object):
             logger.error("Generating Thumbnail for {} skipped: {}".format(os.path.basename(path), str(e)))
 
 
-def find_image_urls_in_file(file_path):
+def find_image_urls_in_file(file_path, settings):
     with open(file_path) as file_obj:
         soup = BeautifulSoup(file_obj)
 
         imgs = soup.find_all("img")
 
-        return [img["src"] for img in imgs]
+        urls = [img["src"] for img in imgs]
+
+        if settings.get("ADVTHUMB_SEARCH_IMAGES_IN_ANCHORS", False):
+            import urlparse, mimetypes
+
+            links = soup.find_all("a")
+            for link in links:
+                if not link.has_attr("href"):
+                    continue
+                url = link["href"]
+                maintype = mimetypes.guess_type(urlparse.urlparse(url).path)[0]
+                if maintype in ("image/png", "image/jpeg", "image/gif"):
+                    urls.append(url)
+
+    return urls
 
 
 class JinjaThumbnailExtension(Extension):
@@ -192,7 +205,8 @@ def find_missing_images(pelican):
             if not ext in [".html", ".htm"]:
                 continue
 
-            image_urls = find_image_urls_in_file(os.path.join(dirpath, filename))
+            image_urls = find_image_urls_in_file(os.path.join(dirpath, filename),
+                                                 pelican.settings)
 
             for url in image_urls:
                 relative_url = url.replace(site_url, "", 1)
