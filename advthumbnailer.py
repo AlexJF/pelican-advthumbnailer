@@ -45,7 +45,9 @@ def original_to_thumbnail_path(path, spec):
 
 
 def thumbnail_to_original_path(thumbnail_path):
-    return re.sub(DEFAULT_THUMBNAIL_RECOGNIZER, r"\g<basepath>\g<filename>", thumbnail_path)
+    original_path = re.sub(DEFAULT_THUMBNAIL_RECOGNIZER, r"\g<basepath>\g<filename>", thumbnail_path)
+    logger.debug("THUMBNAIL_TO_ORIGINAL {} {}".format(thumbnail_path, original_path))
+    return original_path
 
 
 class Thumbnailer(object):
@@ -192,6 +194,7 @@ def find_missing_images(pelican):
         return
 
     site_url = pelican.settings["SITEURL"] + "/"
+
     base_dir = pelican.settings["OUTPUT_PATH"]
 
     logger.debug("Thumbnailer Started")
@@ -205,11 +208,16 @@ def find_missing_images(pelican):
             if not ext in [".html", ".htm"]:
                 continue
 
-            image_urls = find_image_urls_in_file(os.path.join(dirpath, filename),
+            filepath = os.path.join(dirpath, filename)
+            logger.debug("Checking {}".format(filepath))
+            image_urls = find_image_urls_in_file(filepath,
                                                  pelican.settings)
 
             for url in image_urls:
-                relative_url = url.replace(site_url, "", 1)
+                if pelican.settings["RELATIVE_URLS"]:
+                    relative_url = url
+                else:
+                    relative_url = url.replace(site_url, "", 1)
 
                 # If external URL, skip
                 if re.match(r"[^:]+:/", relative_url):
@@ -218,8 +226,14 @@ def find_missing_images(pelican):
                 if relative_url.startswith('/'):
                     relative_url = relative_url[1:]
 
+                logger.debug("relative_url = {}".format(relative_url))
                 relative_url_parts = relative_url.split('/')
-                image_path = os.path.join(base_dir, *relative_url_parts)
+
+                if pelican.settings["RELATIVE_URLS"]:
+                    image_path = os.path.join(dirpath, *relative_url_parts)
+                else:
+                    image_path = os.path.join(base_dir, *relative_url_parts)
+                logger.debug("image_path = {}".format(image_path))
                 thumbnailer.handle_path(image_path)
 
 
