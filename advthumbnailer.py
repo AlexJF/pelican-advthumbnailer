@@ -25,8 +25,8 @@ except ImportError:
     logging.warning("Unable to load PIL, disabling thumbnailer")
     enabled = False
 
-DEFAULT_THUMBNAIL_RECOGNIZER = r"(?P<basepath>.*)thumbnails/(?P<spec>[^/]+)/(?P<filename>[^/]+)$"
-DEFAULT_THUMBNAIL_PATHER = "thumbnails/{spec}/{filename}"
+DEFAULT_THUMBNAIL_RECOGNIZER = r"(?P<basepath>.*)thumbnails(?:/|\\)(?P<spec>[^/\\]+)(?:/|\\)(?P<filename>[^/\\]+)$"
+DEFAULT_THUMBNAIL_PATHER = os.path.join("thumbnails", "{spec}", "{filename}")
 
 
 def recognize_thumbnail(path):
@@ -42,6 +42,10 @@ def original_to_thumbnail_path(path, spec):
             DEFAULT_THUMBNAIL_PATHER.format(
                 filename=os.path.basename(path),
                 spec=spec))
+
+
+def original_to_thumbnail_url(path, spec):
+    return original_to_thumbnail_path(path, spec).replace(os.sep, "/")
 
 
 def thumbnail_to_original_path(thumbnail_path):
@@ -181,7 +185,7 @@ class JinjaThumbnailExtension(Extension):
     def __init__(self, environment):
         super(JinjaThumbnailExtension, self).__init__(environment)
 
-        environment.filters['thumbnail'] = original_to_thumbnail_path
+        environment.filters['thumbnail'] = original_to_thumbnail_url
 
 
 def add_jinja2_ext(pelican):
@@ -239,7 +243,7 @@ def find_missing_images(pelican):
 
 def autostatic_path_found(sender, autostatic_path):
     if "thumb" in autostatic_path.extra:
-        autostatic_path.url = original_to_thumbnail_path(
+        autostatic_path.url = original_to_thumbnail_url(
             autostatic_path.url,
             autostatic_path.extra["thumb"])
 
