@@ -160,7 +160,7 @@ class Thumbnailer(object):
 
 def find_image_urls_in_file(file_path, settings):
     with open(file_path) as file_obj:
-        soup = BeautifulSoup(file_obj)
+        soup = BeautifulSoup(file_obj, "html.parser")
 
         imgs = soup.find_all("img")
 
