@@ -1,3 +1,5 @@
+* 29/07/2016 - 0.5.0
+    * Fix beautifulsoup warning.
 * 10/01/2015 - 0.4.0
     * Fix incompatibilities with Windows paths.
 * 21/09/2014 - 0.3.0
