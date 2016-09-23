@@ -43,7 +43,7 @@ Usage
 
       E.g: ``output/images/example.png``
 
-   2. Add an ``<img>`` tag containing as source: ::
+   2. Add an ``<img>`` (or a ``<source>`` tag) containing as source (or scrset): ::
       
           images/thumbnails/<spec>/example.png
 
