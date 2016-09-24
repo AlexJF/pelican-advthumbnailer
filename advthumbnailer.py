@@ -163,8 +163,11 @@ def find_image_urls_in_file(file_path, settings):
         soup = BeautifulSoup(file_obj, "html.parser")
 
         imgs = soup.find_all("img")
+        sources = soup.find_all("source")
 
-        urls = [img["src"] for img in imgs]
+        urls = [img.get("src") for img in imgs if img.get("src") is not None]
+        urls += [img.get("srcset") for img in imgs if img.get("srcset") is not None]
+        urls += [source.get("srcset") for source in sources if source.get("srcset") is not None]
 
         if settings.get("ADVTHUMB_SEARCH_IMAGES_IN_ANCHORS", False):
             import urlparse, mimetypes
