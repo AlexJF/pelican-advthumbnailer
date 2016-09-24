@@ -1,3 +1,5 @@
+* 24/09/2016 - 0.6.0
+    * Add support for <source> tag or srcsets.
 * 29/07/2016 - 0.5.0
     * Fix beautifulsoup warning.
 * 10/01/2015 - 0.4.0
