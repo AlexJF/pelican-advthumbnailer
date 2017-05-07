@@ -3,11 +3,13 @@ from setuptools import setup
 with open('README.rst') as f:
     long_description = f.read()
 
+version = '0.7.0'
+
 setup(
 
     # Basic package information:
     name = 'pelican-advthumbnailer',
-    version = '0.6.0',
+    version = version,
     py_modules = ('advthumbnailer',),
 
     # Packaging options:
@@ -22,7 +24,7 @@ setup(
     author_email = 'alexandrejorgefonseca@gmail.com',
     license = 'Apache',
     url = 'https://github.com/AlexJF/pelican-advthumbnailer',
-    download_url = 'https://github.com/AlexJF/pelican-advthumbnailer/archive/v0.6.0.zip',
+    download_url = 'https://github.com/AlexJF/pelican-advthumbnailer/archive/v{version}.zip'.format(version=version),
     keywords = 'pelican blog static thumbnail generation',
     description = ('A thumbnail generator for Pelican that operates by looking'
             ' at the filename of missing files to determine thumb format.'),

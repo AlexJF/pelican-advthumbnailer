@@ -1,3 +1,5 @@
+* 21/04/2017 - 0.7.0
+    * Pelican 3.7 compatibility.
 * 24/09/2016 - 0.6.0
     * Add support for <source> tag or srcsets.
 * 29/07/2016 - 0.5.0

@@ -14,8 +14,6 @@ from pelican.utils import mkdir_p
 
 from bs4 import BeautifulSoup
 
-from jinja2.ext import Extension
-
 logger = logging.getLogger(__name__)
 
 try:
@@ -123,7 +121,6 @@ class Thumbnailer(object):
         logging.debug("Using resizer {0}".format(resizer.__name__))
         return resizer(targetw, targeth, image, forced)
 
-
     def handle_path(self, path):
         logger.debug("Trying path {}".format(path))
 
@@ -184,15 +181,8 @@ def find_image_urls_in_file(file_path, settings):
     return urls
 
 
-class JinjaThumbnailExtension(Extension):
-    def __init__(self, environment):
-        super(JinjaThumbnailExtension, self).__init__(environment)
-
-        environment.filters['thumbnail'] = original_to_thumbnail_url
-
-
 def add_jinja2_ext(pelican):
-    pelican.settings['JINJA_EXTENSIONS'].append(JinjaThumbnailExtension)
+    pelican.settings['JINJA_FILTERS']['thumbnail'] = original_to_thumbnail_url
 
 
 def find_missing_images(pelican):
