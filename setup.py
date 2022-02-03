@@ -28,6 +28,5 @@ setup(
     keywords = 'pelican blog static thumbnail generation',
     description = ('A thumbnail generator for Pelican that operates by looking'
             ' at the filename of missing files to determine thumb format.'),
-    use_2to3 = True,
     long_description = long_description
 )
