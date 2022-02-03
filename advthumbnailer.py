@@ -16,12 +16,15 @@ logger = logging.getLogger(__name__)
 
 try:
     from PIL import Image, ImageOps
+
     enabled = True
 except ImportError:
     logging.warning("Unable to load PIL, disabling thumbnailer")
     enabled = False
 
-DEFAULT_THUMBNAIL_RECOGNIZER = r"(?P<basepath>.*)thumbnails(?:/|\\)(?P<spec>[^/\\]+)(?:/|\\)(?P<filename>[^/\\]+)$"
+DEFAULT_THUMBNAIL_RECOGNIZER = (
+    r"(?P<basepath>.*)thumbnails(?:/|\\)(?P<spec>[^/\\]+)(?:/|\\)(?P<filename>[^/\\]+)$"
+)
 DEFAULT_THUMBNAIL_PATHER = os.path.join("thumbnails", "{spec}", "{filename}")
 
 
@@ -34,10 +37,10 @@ def original_to_thumbnail_path(path, spec):
     # Get original path just in case path is already a thumbnail to prevent
     # thumbnail nesting
     path = thumbnail_to_original_path(path)
-    return os.path.join(os.path.dirname(path),
-            DEFAULT_THUMBNAIL_PATHER.format(
-                filename=os.path.basename(path),
-                spec=spec))
+    return os.path.join(
+        os.path.dirname(path),
+        DEFAULT_THUMBNAIL_PATHER.format(filename=os.path.basename(path), spec=spec),
+    )
 
 
 def original_to_thumbnail_url(path, spec):
@@ -45,15 +48,17 @@ def original_to_thumbnail_url(path, spec):
 
 
 def thumbnail_to_original_path(thumbnail_path):
-    original_path = re.sub(DEFAULT_THUMBNAIL_RECOGNIZER, r"\g<basepath>\g<filename>", thumbnail_path)
+    original_path = re.sub(
+        DEFAULT_THUMBNAIL_RECOGNIZER, r"\g<basepath>\g<filename>", thumbnail_path
+    )
     logger.debug("THUMBNAIL_TO_ORIGINAL {} {}".format(thumbnail_path, original_path))
     return original_path
 
 
 class Thumbnailer(object):
-    """ Resizes based on a text specification, see readme """
+    """Resizes based on a text specification, see readme"""
 
-    REGEX = re.compile(r'(\d+|_)x(\d+|_)(!?)')
+    REGEX = re.compile(r"(\d+|_)x(\d+|_)(!?)")
 
     def __init__(self, settings):
         self.settings = settings
@@ -68,7 +73,7 @@ class Thumbnailer(object):
         if image_w < w and image_h < h and not forced:
             return image
 
-        retval = ImageOps.fit(image, (w,h), Image.ANTIALIAS)
+        retval = ImageOps.fit(image, (w, h), Image.ANTIALIAS)
         return retval
 
     def _aspect_resize(self, w, h, image, forced=False):
@@ -81,11 +86,11 @@ class Thumbnailer(object):
         resizer = self._null_resize
 
         # Square resize and crop
-        if 'x' not in spec:
+        if "x" not in spec:
             resizer = self._exact_resize
             targetw = int(spec)
             targeth = targetw
-            forced = '!' in spec
+            forced = "!" in spec
         else:
             matches = self.REGEX.search(spec)
             tmpw = matches.group(1)
@@ -93,19 +98,19 @@ class Thumbnailer(object):
             forced = matches.group(3)
 
             # Full Size
-            if tmpw == '_' and tmph == '_':
+            if tmpw == "_" and tmph == "_":
                 targetw = image.size[0]
                 targeth = image.size[1]
                 resizer = self._null_resize
 
             # Set Height Size
-            if tmpw == '_':
+            if tmpw == "_":
                 targetw = image.size[0]
                 targeth = int(tmph)
                 resizer = self._aspect_resize
 
             # Set Width Size
-            elif tmph == '_':
+            elif tmph == "_":
                 targetw = int(tmpw)
                 targeth = image.size[1]
                 resizer = self._aspect_resize
@@ -146,16 +151,20 @@ class Thumbnailer(object):
 
         try:
             image = Image.open(original_path)
-            thumbnail = self._resize(image, thumbnail_info.group("spec"))            
+            thumbnail = self._resize(image, thumbnail_info.group("spec"))
             thumbnail.save(
-                path, 
-                quality=self.settings.get("ADVTHUMB_QUALITY", 70), 
-                optimize=self.settings.get("ADVTHUMB_OPTIMIZE", True), 
-                progressive=self.settings.get("ADVTHUMB_PROGRESSIVE", True)
-                )
+                path,
+                quality=self.settings.get("ADVTHUMB_QUALITY", 70),
+                optimize=self.settings.get("ADVTHUMB_OPTIMIZE", True),
+                progressive=self.settings.get("ADVTHUMB_PROGRESSIVE", True),
+            )
             logger.info("Generated Thumbnail {}".format(os.path.basename(path)))
         except IOError as e:
-            logger.error("Generating Thumbnail for {} skipped: {}".format(os.path.basename(path), str(e)))
+            logger.error(
+                "Generating Thumbnail for {} skipped: {}".format(
+                    os.path.basename(path), str(e)
+                )
+            )
 
 
 def find_image_urls_in_file(file_path, settings):
@@ -167,10 +176,15 @@ def find_image_urls_in_file(file_path, settings):
 
         urls = [img.get("src") for img in imgs if img.get("src") is not None]
         urls += [img.get("srcset") for img in imgs if img.get("srcset") is not None]
-        urls += [source.get("srcset") for source in sources if source.get("srcset") is not None]
+        urls += [
+            source.get("srcset")
+            for source in sources
+            if source.get("srcset") is not None
+        ]
 
         if settings.get("ADVTHUMB_SEARCH_IMAGES_IN_ANCHORS", False):
-            import urlparse, mimetypes
+            import urllib.parse as urlparse
+            import mimetypes
 
             links = soup.find_all("a")
             for link in links:
@@ -185,7 +199,7 @@ def find_image_urls_in_file(file_path, settings):
 
 
 def add_jinja2_ext(pelican):
-    pelican.settings['JINJA_FILTERS']['thumbnail'] = original_to_thumbnail_url
+    pelican.settings["JINJA_FILTERS"]["thumbnail"] = original_to_thumbnail_url
 
 
 def find_missing_images(pelican):
@@ -205,13 +219,12 @@ def find_missing_images(pelican):
         for filename in filenames:
             _, ext = os.path.splitext(filename)
 
-            if not ext in [".html", ".htm"]:
+            if ext not in [".html", ".htm"]:
                 continue
 
             filepath = os.path.join(dirpath, filename)
             logger.debug("Checking {}".format(filepath))
-            image_urls = find_image_urls_in_file(filepath,
-                                                 pelican.settings)
+            image_urls = find_image_urls_in_file(filepath, pelican.settings)
 
             for url in image_urls:
                 if pelican.settings["RELATIVE_URLS"]:
@@ -223,11 +236,11 @@ def find_missing_images(pelican):
                 if re.match(r"[^:]+:/", relative_url):
                     continue
 
-                if relative_url.startswith('/'):
+                if relative_url.startswith("/"):
                     relative_url = relative_url[1:]
 
                 logger.debug("relative_url = {}".format(relative_url))
-                relative_url_parts = relative_url.split('/')
+                relative_url_parts = relative_url.split("/")
 
                 if pelican.settings["RELATIVE_URLS"]:
                     image_path = os.path.join(dirpath, *relative_url_parts)
@@ -240,8 +253,8 @@ def find_missing_images(pelican):
 def autostatic_path_found(sender, autostatic_path):
     if "thumb" in autostatic_path.extra:
         autostatic_path.url = original_to_thumbnail_url(
-            autostatic_path.url,
-            autostatic_path.extra["thumb"])
+            autostatic_path.url, autostatic_path.extra["thumb"]
+        )
 
 
 def register():
