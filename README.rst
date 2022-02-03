@@ -75,6 +75,12 @@ Options
 - ``ADVTHUMB_SEARCH_IMAGES_IN_ANCHORS`` (default: ``False``): Boolean option
   that determines if advthumbnailer should consider the ``href`` attribute of 
   ``<a>`` elements as thumbnail paths.
+- ``ADVTHUMB_QUALITY`` (default: ``70``): Int option
+  that determines quality of generated thumbnails.
+- ``ADVTHUMB_OPTIMIZE`` (default: ``True``): Boolean option
+  that determines if generated thumbnails should be optimized.
+- ``ADVTHUMB_PROGRESSIVE`` (default: ``True``): Boolean option
+  that determines if generated thumbnails should be progressive.
 
 
 Integrations

@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from __future__ import unicode_literals, print_function
-
 import logging
 import os
 import re
@@ -57,8 +55,8 @@ class Thumbnailer(object):
 
     REGEX = re.compile(r'(\d+|_)x(\d+|_)(!?)')
 
-    def __init__(self):
-        pass
+    def __init__(self, settings):
+        self.settings = settings
 
     def _null_resize(self, w, h, image, forced=False):
         return image
@@ -149,11 +147,12 @@ class Thumbnailer(object):
         try:
             image = Image.open(original_path)
             thumbnail = self._resize(image, thumbnail_info.group("spec"))            
-            try:
-                thumbnail.save(path, quality=70, optimize=True, progressive=True)
-            except IOError:
-                PIL.ImageFile.MAXBLOCK = img.size[0] * img.size[1]
-                img.save(path, quality=70, optimize=True, progressive=True)
+            thumbnail.save(
+                path, 
+                quality=self.settings.get("ADVTHUMB_QUALITY", 70), 
+                optimize=self.settings.get("ADVTHUMB_OPTIMIZE", True), 
+                progressive=self.settings.get("ADVTHUMB_PROGRESSIVE", True)
+                )
             logger.info("Generated Thumbnail {}".format(os.path.basename(path)))
         except IOError as e:
             logger.error("Generating Thumbnail for {} skipped: {}".format(os.path.basename(path), str(e)))
@@ -200,7 +199,7 @@ def find_missing_images(pelican):
 
     logger.debug("Thumbnailer Started")
 
-    thumbnailer = Thumbnailer()
+    thumbnailer = Thumbnailer(pelican.settings)
 
     for dirpath, _, filenames in os.walk(base_dir):
         for filename in filenames:

@@ -1,3 +1,6 @@
+* 03/02/2022 - 1.0.0
+    * Remove support for Python 2.
+    * Support optimization of thumbnails.
 * 21/04/2017 - 0.7.0
     * Pelican 3.7 compatibility.
 * 24/09/2016 - 0.6.0

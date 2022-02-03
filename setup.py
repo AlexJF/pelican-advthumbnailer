@@ -3,7 +3,7 @@ from setuptools import setup
 with open('README.rst') as f:
     long_description = f.read()
 
-version = '0.7.0'
+version = '1.0.0'
 
 setup(
 
