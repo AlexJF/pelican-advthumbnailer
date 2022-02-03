@@ -148,8 +148,12 @@ class Thumbnailer(object):
 
         try:
             image = Image.open(original_path)
-            thumbnail = self._resize(image, thumbnail_info.group("spec"))
-            thumbnail.save(path)
+            thumbnail = self._resize(image, thumbnail_info.group("spec"))            
+            try:
+                thumbnail.save(path, quality=70, optimize=True, progressive=True)
+            except IOError:
+                PIL.ImageFile.MAXBLOCK = img.size[0] * img.size[1]
+                img.save(path, quality=70, optimize=True, progressive=True)
             logger.info("Generated Thumbnail {}".format(os.path.basename(path)))
         except IOError as e:
             logger.error("Generating Thumbnail for {} skipped: {}".format(os.path.basename(path), str(e)))
