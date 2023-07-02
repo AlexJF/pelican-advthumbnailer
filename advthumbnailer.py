@@ -73,12 +73,12 @@ class Thumbnailer(object):
         if image_w < w and image_h < h and not forced:
             return image
 
-        retval = ImageOps.fit(image, (w, h), Image.ANTIALIAS)
+        retval = ImageOps.fit(image, (w, h), Image.LANCZOS)
         return retval
 
     def _aspect_resize(self, w, h, image, forced=False):
         retval = image.copy()
-        retval.thumbnail((w, h), Image.ANTIALIAS)
+        retval.thumbnail((w, h), Image.LANCZOS)
 
         return retval
 
